@@ -13,13 +13,13 @@
 
 	const API_URL = import.meta.env.VITE_API_URL;
 	function connect() {
-		console.log(`Connecting to WebSocket at ${API_URL}/chat?username=${encodeURIComponent(username)}`);
+		console.log(`Connecting to WebSocket at ${API_URL}chat?username=${encodeURIComponent(username)}`);
 		if (!username) {
 			error = 'Please enter a username.';
 			return;
 		}
 		error = '';
-		ws = new WebSocket(`${API_URL}/chat?username=${encodeURIComponent(username)}`);
+		ws = new WebSocket(`${API_URL}chat?username=${encodeURIComponent(username)}`);
 		ws.onopen = () => {
 			connected = true;
 		};
