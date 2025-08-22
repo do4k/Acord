@@ -87,6 +87,32 @@
 		}
 	}
 
+	function handlePaste(event: ClipboardEvent) {
+		if (!ws || !connected) return;
+		const items = event.clipboardData?.items;
+		if (!items) return;
+		for (const item of items) {
+			if (item.type === "image/gif") {
+				const file = item.getAsFile();
+				if (file) {
+					const reader = new FileReader();
+					reader.onload = () => {
+						ws.send(
+							JSON.stringify({
+								type: "gif",
+								data: reader.result,
+								author: username,
+							})
+						);
+					};
+					reader.readAsDataURL(file);
+					event.preventDefault();
+					break;
+				}
+			}
+		}
+	}
+
 	onDestroy(() => {
 		ws?.close();
 	});
@@ -252,6 +278,7 @@
 						placeholder="Type a message..."
 						style="flex:1; padding:0.5em; border-radius:4px; border:1px solid #444; background:#181818; color:#f5f5f5;"
 						on:keydown={(e) => e.key === "Enter" && sendMessage()}
+						on:paste={handlePaste}
 					/>
 					<button
 						on:click={sendMessage}
