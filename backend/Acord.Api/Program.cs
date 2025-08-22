@@ -52,20 +52,25 @@ app.Map("/chat", async (HttpContext context, [FromServices] ILogger<Program> log
     var ws = await context.WebSockets.AcceptWebSocketAsync();
     userClients[username] = ws;
     var buffer = new byte[1024 * 4];
-
-    await BroadcastUserList(userClients);
-
+    var messageBuffer = new List<byte>();
     try
     {
         while (ws.State == WebSocketState.Open)
         {
-            var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+            messageBuffer.Clear();
+            WebSocketReceiveResult result;
+            do
+            {
+                result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                messageBuffer.AddRange(buffer.Take(result.Count));
+            } while (!result.EndOfMessage && ws.State == WebSocketState.Open);
+
             if (result.MessageType == WebSocketMessageType.Close)
             {
                 logger.LogInformation("WebSocket connection closed by client: {Username}", username);
                 break;
             }
-            var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+            var message = Encoding.UTF8.GetString(messageBuffer.ToArray());
             logger.LogInformation("Message received: {Message}", message);
             string broadcastMessage;
             if (message.StartsWith("{") && message.Contains("\"type\":\"gif\"")) {

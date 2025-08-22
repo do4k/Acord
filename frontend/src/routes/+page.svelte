@@ -35,17 +35,21 @@
 			connected = false;
 		};
 		ws.onmessage = (event) => {
-			if (event.data.startsWith("__users__:")) {
+			if (event.data.startsWith("__users__:" )) {
 				onlineUsers = event.data
 					.replace("__users__:", "")
 					.split(",")
 					.filter(Boolean);
+
+				console.log("New user connected:", onlineUsers);
 			} else {
 				let msg;
 				try {
 					msg = JSON.parse(event.data);
+					console.log("JSON Received message:", msg);
 				} catch {
 					msg = event.data;
+					console.log("Received message:", msg);
 				}
 				messages = [...messages, msg];
 				setTimeout(() => {
