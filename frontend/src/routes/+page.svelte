@@ -158,7 +158,13 @@
 								/>
 							</div>
 						{:else if typeof msg === "string"}
-							{#if msg.startsWith(`${username}: `)}
+							{#if msg.startsWith("SYSTEM: ")}
+								<div style="align-self:center; text-align:center; width:100%;">
+									<div style="background:#444; color:#ffd700; padding:0.5em 1em; border-radius:16px; font-weight:bold; margin:0.5em auto; display:inline-block;">
+										{msg.replace("SYSTEM: ", "")}
+									</div>
+								</div>
+							{:else if msg.startsWith(`${username}: `)}
 								{#if i === 0 || (typeof messages[i - 1] === "string" && !(messages[i - 1] as string).startsWith(`${username}: `))}
 									<div
 										style="align-self:flex-end; max-width:70%; text-align:right;"

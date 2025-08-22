@@ -52,6 +52,7 @@ app.Map("/chat", async (HttpContext context, [FromServices] ILogger<Program> log
     var ws = await context.WebSockets.AcceptWebSocketAsync();
     userClients[username] = ws;
     await BroadcastUserList(userClients);
+    await BroadcastChatAnnouncement($"{username} has joined the chat.", userClients);
     var buffer = new byte[1024 * 4];
     var messageBuffer = new List<byte>();
     try
@@ -93,9 +94,10 @@ app.Map("/chat", async (HttpContext context, [FromServices] ILogger<Program> log
     }
     finally
     {
-        userClients.TryRemove(username, out _);
-        await BroadcastUserList(userClients);
-        await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed by the WebSocket handler", CancellationToken.None);
+    userClients.TryRemove(username, out _);
+    await BroadcastUserList(userClients);
+    await BroadcastChatAnnouncement($"{username} has left the chat.", userClients);
+    await ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed by the WebSocket handler", CancellationToken.None);
     }
 });
 
@@ -104,6 +106,19 @@ static async Task BroadcastUserList(ConcurrentDictionary<string, WebSocket> user
     var userList = string.Join(",", userClients.Keys);
     var userMsg = $"__users__:{userList}";
     var bytes = Encoding.UTF8.GetBytes(userMsg);
+    foreach (var ws in userClients.Values)
+    {
+        if (ws.State == WebSocketState.Open)
+        {
+            await ws.SendAsync(bytes, WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+    }
+}
+
+
+static async Task BroadcastChatAnnouncement(string announcement, ConcurrentDictionary<string, WebSocket> userClients)
+{
+    var bytes = Encoding.UTF8.GetBytes($"SYSTEM: {announcement}");
     foreach (var ws in userClients.Values)
     {
         if (ws.State == WebSocketState.Open)
