@@ -73,37 +73,61 @@
 		</section>
 		{/if}
 		{#if connected}
-		<section style="width:100%; max-width:500px; margin:auto; margin-top:2em; padding:1em; background:#222; border-radius:12px; box-shadow:0 2px 16px #111; color:#f5f5f5; display:flex; flex-direction:column; align-items:center;">
-			<h3 style="color:#f5f5f5; margin-bottom:1em;">Chat Window</h3>
-			<div style="width:100%; display:flex; gap:2em;">
-				<div style="flex:2;">
-					<div id="chat-window" style="width:100%; height:300px; overflow-y:auto; background:#181818; border-radius:8px; border:1px solid #333; margin-bottom:1em; color:#f5f5f5; padding:1em; display:flex; flex-direction:column; gap:0.5em;">
-						{#each messages as msg}
-							{#if msg.startsWith(`${username}: `)}
-								<div style="align-self:flex-end; background:#1976d2; color:#fff; padding:0.5em 1em; border-radius:16px 16px 0 16px; max-width:70%; text-align:right;">{msg.replace(`${username}: `, '')}</div>
+		<section style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:#222; color:#f5f5f5; display:flex; flex-direction:row; align-items:stretch;">
+			<div style="flex:2; display:flex; flex-direction:column; height:100vh;">
+				<h3 style="color:#f5f5f5; margin:1em 0 0.5em 1em;">Chat Window</h3>
+				<div id="chat-window" style="flex:1; overflow-y:auto; background:#181818; border-radius:8px; border:1px solid #333; margin:0 1em 0.5em 1em; color:#f5f5f5; padding:1em; display:flex; flex-direction:column; gap:0.5em;">
+					{#each messages as msg, i}
+						{#if msg.startsWith(`${username}: `)}
+							{#if i === 0 || !messages[i-1].startsWith(`${username}: `)}
+								<div style="align-self:flex-end; max-width:70%; text-align:right;">
+									<div style="font-weight:bold; color:#fff; margin-bottom:2px;">{username}</div>
+									<div style="background:#1976d2; color:#fff; padding:0.5em 1em; border-radius:16px 16px 0 16px; word-break:break-word; overflow-wrap:anywhere;">{msg.replace(`${username}: `, '')}</div>
+								</div>
 							{:else}
-								<div style="align-self:flex-start; background:#333; color:#f5f5f5; padding:0.5em 1em; border-radius:16px 16px 16px 0; max-width:70%; text-align:left;">{msg}</div>
+								<div style="align-self:flex-end; max-width:70%; text-align:right;">
+									<div style="background:#1976d2; color:#fff; padding:0.5em 1em; border-radius:16px 16px 0 16px; word-break:break-word; overflow-wrap:anywhere;">{msg.replace(`${username}: `, '')}</div>
+								</div>
 							{/if}
-						{/each}
-					</div>
-					<div style="width:100%; display:flex; gap:0.5em;">
-						<input
-							bind:value={messageToSend}
-							placeholder="Type a message..."
-							style="flex:1; padding:0.5em; border-radius:4px; border:1px solid #444; background:#181818; color:#f5f5f5;"
-							on:keydown={(e) => e.key === 'Enter' && sendMessage()}
-						/>
-						<button on:click={sendMessage} disabled={!messageToSend.trim()} style="padding:0.5em 1em; border-radius:4px; background:#1976d2; color:#fff; border:none;">Send</button>
-					</div>
+						{:else}
+							{#if msg.includes(': ')}
+								{@const author = msg.split(': ')[0]}
+								{#if i === 0 || !messages[i-1].startsWith(`${author}: `)}
+									<div style="align-self:flex-start; max-width:70%; text-align:left;">
+										<div style="font-weight:bold; color:#1976d2; margin-bottom:2px;">{author}</div>
+										<div style="background:#333; color:#f5f5f5; padding:0.5em 1em; border-radius:16px 16px 16px 0; word-break:break-word; overflow-wrap:anywhere;">{msg.split(': ').slice(1).join(': ')}</div>
+									</div>
+								{:else}
+									<div style="align-self:flex-start; max-width:70%; text-align:left;">
+										<div style="background:#333; color:#f5f5f5; padding:0.5em 1em; border-radius:16px 16px 16px 0; word-break:break-word; overflow-wrap:anywhere;">{msg.split(': ').slice(1).join(': ')}</div>
+									</div>
+								{/if}
+							{:else}
+								<div style="align-self:flex-start; max-width:70%; text-align:left;">
+									<div style="font-weight:bold; color:#f5f5f5; margin-bottom:2px;">Unknown</div>
+									<div style="background:#333; color:#f5f5f5; padding:0.5em 1em; border-radius:16px 16px 16px 0; word-break:break-word; overflow-wrap:anywhere;">{msg}</div>
+								</div>
+							{/if}
+						{/if}
+					{/each}
 				</div>
-				<div style="flex:1; background:#181818; border-radius:8px; border:1px solid #333; padding:1em; color:#f5f5f5; min-width:120px;">
-					<h4 style="margin-top:0; margin-bottom:0.5em; color:#f5f5f5;">Online Users</h4>
-					<ul style="list-style:none; padding:0; margin:0;">
-						{#each onlineUsers as user}
-							<li style="padding:0.25em 0; color:{user === username ? '#1976d2' : '#f5f5f5'}; font-weight:{user === username ? 'bold' : 'normal'};">{user}</li>
-						{/each}
-					</ul>
+				<div style="width:100%; display:flex; gap:0.5em; padding:1em; background:#222; border-top:1px solid #333;">
+					<input
+						bind:value={messageToSend}
+						placeholder="Type a message..."
+						style="flex:1; padding:0.5em; border-radius:4px; border:1px solid #444; background:#181818; color:#f5f5f5;"
+						on:keydown={(e) => e.key === 'Enter' && sendMessage()}
+					/>
+					<button on:click={sendMessage} disabled={!messageToSend.trim()} style="padding:0.5em 1em; border-radius:4px; background:#1976d2; color:#fff; border:none;">Send</button>
 				</div>
+			</div>
+			<div style="flex:1; background:#181818; border-radius:8px; border:1px solid #333; padding:1em; color:#f5f5f5; min-width:220px; height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
+				<h4 style="margin-top:0; margin-bottom:0.5em; color:#f5f5f5;">Online Users</h4>
+				<ul style="list-style:none; padding:0; margin:0;">
+					{#each onlineUsers as user}
+						<li style="padding:0.25em 0; color:{user === username ? '#1976d2' : '#f5f5f5'}; font-weight:{user === username ? 'bold' : 'normal'};">{user}</li>
+					{/each}
+				</ul>
 			</div>
 		</section>
 		{/if}
