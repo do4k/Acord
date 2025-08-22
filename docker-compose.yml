@@ -21,4 +21,4 @@ services:
       - ./frontend:/app
     environment:
       - NODE_ENV=production
-      - VITE_API_URL=wss://backend:15001
+      - VITE_API_URL=wss://acord-api.o4k.uk

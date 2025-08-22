@@ -6,5 +6,8 @@ export default defineConfig({
 	plugins: [
 		tailwindcss(),
 		sveltekit()
-	]
+	],
+	preview: {
+		allowedHosts: ['acord.o4k.uk']
+	}
 });
