@@ -88,31 +88,46 @@
 	}
 
 	function handlePaste(event: ClipboardEvent) {
-		if (!ws || !connected) return;
+		console.log("Paste event detected");
+		if (!ws) {
+			console.error("WebSocket is not initialized.");
+			return;
+		}
+		if (!connected) {
+			console.error("WebSocket is not connected.");
+			return;
+		}
 		const items = event.clipboardData?.items;
-		if (!items) return;
+		if (!items) {
+			console.error("No clipboard items found.");
+			return;
+		}
 		for (const item of items) {
+			console.log("Clipboard item:", item);
 			if (item.type === "image/gif") {
 				const file = item.getAsFile();
-				if (file) {
-					const reader = new FileReader();
-					reader.onload = () => {
-						if (ws) {
-							ws.send(
-								JSON.stringify({
-									type: "gif",
-									data: reader.result,
-									author: username,
-								})
-							);
-						} else {
-							console.error("WebSocket is not connected.");
-						}
-					};
-					reader.readAsDataURL(file);
-					event.preventDefault();
-					break;
+				if (!file) {
+					console.error("Failed to get GIF file.");
+					continue;
 				}
+				const reader = new FileReader();
+				reader.onload = () => {
+					if (ws) {
+						console.log("Sending GIF:", reader.result);
+						ws.send(
+							JSON.stringify({
+								type: "gif",
+								data: reader.result,
+								author: username,
+							})
+						);
+					} else {
+						console.error("WebSocket is not connected.");
+					}
+				};
+				reader.readAsDataURL(file);
+				event.preventDefault();
+				break;
 			}
 		}
 	}
