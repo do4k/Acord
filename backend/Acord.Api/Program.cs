@@ -20,6 +20,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.MapGet("/", () => "Acord API is running.");
+
 var userClients = new ConcurrentDictionary<string, WebSocket>();
 app.Map("/chat", async (HttpContext context, [FromServices] ILogger<Program> logger, [FromQuery] string username) =>
 {
