@@ -74,7 +74,7 @@
 		{/if}
 		{#if connected}
 		<section style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:#222; color:#f5f5f5; display:flex; flex-direction:row; align-items:stretch;">
-			<div style="flex:2; display:flex; flex-direction:column; height:100vh;">
+			<div style="flex:4; display:flex; flex-direction:column; height:100vh;">
 				<h3 style="color:#f5f5f5; margin:1em 0 0.5em 1em;">Chat Window</h3>
 				<div id="chat-window" style="flex:1; overflow-y:auto; background:#181818; border-radius:8px; border:1px solid #333; margin:0 1em 0.5em 1em; color:#f5f5f5; padding:1em; display:flex; flex-direction:column; gap:0.5em;">
 					{#each messages as msg, i}
@@ -121,7 +121,7 @@
 					<button on:click={sendMessage} disabled={!messageToSend.trim()} style="padding:0.5em 1em; border-radius:4px; background:#1976d2; color:#fff; border:none;">Send</button>
 				</div>
 			</div>
-			<div style="flex:1; background:#181818; border-radius:8px; border:1px solid #333; padding:1em; color:#f5f5f5; min-width:220px; height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
+			<div style="flex:1; background:#181818; border-radius:8px; border:1px solid #333; padding:1em; color:#f5f5f5; min-width:100px; height:100vh; overflow-y:auto; display:flex; flex-direction:column;">
 				<h4 style="margin-top:0; margin-bottom:0.5em; color:#f5f5f5;">Online Users</h4>
 				<ul style="list-style:none; padding:0; margin:0;">
 					{#each onlineUsers as user}
