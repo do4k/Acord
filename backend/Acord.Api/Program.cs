@@ -66,7 +66,14 @@ app.Map("/chat", async (HttpContext context, [FromServices] ILogger<Program> log
                 break;
             }
             var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-            var broadcastMessage = $"{username}: {message}";
+            string broadcastMessage;
+            if (message.StartsWith("{") && message.Contains("\"type\":\"gif\"")) {
+                // Forward GIF JSON as-is
+                broadcastMessage = message;
+            } else {
+                // Regular text message
+                broadcastMessage = $"{username}: {message}";
+            }
             foreach (var client in userClients.Values)
             {
                 if (client.State == WebSocketState.Open)
