@@ -144,10 +144,10 @@
 					{#each messages as msg, i}
 						{#if typeof msg === "object" && msg.type === "gif"}
 							<div
-								style="align-self:flex-start; max-width:70%; text-align:left;"
+								style="align-self:{msg.author === username ? 'flex-end' : 'flex-start'}; max-width:70%; text-align:{msg.author === username ? 'right' : 'left'};"
 							>
 								<div
-									style="font-weight:bold; color:#1976d2; margin-bottom:2px;"
+									style="font-weight:bold; color:{msg.author === username ? '#fff' : '#1976d2'}; margin-bottom:2px;"
 								>
 									{msg.author}
 								</div>

@@ -51,6 +51,7 @@ app.Map("/chat", async (HttpContext context, [FromServices] ILogger<Program> log
 
     var ws = await context.WebSockets.AcceptWebSocketAsync();
     userClients[username] = ws;
+    await BroadcastUserList(userClients);
     var buffer = new byte[1024 * 4];
     var messageBuffer = new List<byte>();
     try
