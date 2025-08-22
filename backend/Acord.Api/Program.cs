@@ -66,6 +66,7 @@ app.Map("/chat", async (HttpContext context, [FromServices] ILogger<Program> log
                 break;
             }
             var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+            logger.LogInformation("Message received: {Message}", message);
             string broadcastMessage;
             if (message.StartsWith("{") && message.Contains("\"type\":\"gif\"")) {
                 // Forward GIF JSON as-is
