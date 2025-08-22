@@ -97,13 +97,17 @@
 				if (file) {
 					const reader = new FileReader();
 					reader.onload = () => {
-						ws.send(
-							JSON.stringify({
-								type: "gif",
-								data: reader.result,
-								author: username,
-							})
-						);
+						if (ws) {
+							ws.send(
+								JSON.stringify({
+									type: "gif",
+									data: reader.result,
+									author: username,
+								})
+							);
+						} else {
+							console.error("WebSocket is not connected.");
+						}
 					};
 					reader.readAsDataURL(file);
 					event.preventDefault();
