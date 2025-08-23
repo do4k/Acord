@@ -13,6 +13,7 @@
 		string | { type: "gif"; data: string; author: string }
 	> = [];
 	let onlineUsers: string[] = [];
+	// Mobile: we'll show a full-width users row beneath the input instead of a floating button
 
 	const API_URL = import.meta.env.VITE_API_URL;
 	function connect() {
@@ -68,14 +69,44 @@
 	});
 </script>
 
+<style>
+	.mobile-users-row { display: none; }
+	/* Responsive layout helpers */
+	@media (max-width: 700px) {
+		.chat-section {
+			flex-direction: column !important;
+		}
+		.online-panel {
+			display: none !important;
+		}
+		/* Mobile-only inline users row */
+		.mobile-users-row {
+			display: block;
+			padding: 0.5rem 1rem 1rem;
+			background: #222;
+			border-top: 1px solid #333;
+		}
+		.user-row-inner { display: flex; align-items: center; gap: 0.5rem; }
+		.chip-scroller { display: flex; gap: 0.5rem; overflow-x: auto; }
+		.chip {
+			background: #181818;
+			border: 1px solid #333;
+			color: #f5f5f5;
+			padding: 0.25rem 0.5rem;
+			border-radius: 999px;
+			white-space: nowrap;
+			font-size: 0.85rem;
+		}
+		.chip.me { background: #1976d2; border-color: #1976d2; color: #fff; }
+	}
+</style>
+
 <main
 	style="min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;"
 >
 	<h1 style="margin-bottom:2em;">Acord Chat</h1>
 	{#if !connected}
-		<section
-			style="width:100%; max-width:400px; margin:auto; background:#222; border-radius:12px; box-shadow:0 2px 16px #111; padding:2em; display:flex; flex-direction:column; align-items:center; justify-content:center;"
-		>
+		<section style="width:100%; max-width:480px; margin:auto; padding:1rem; display:flex; flex-direction:column; align-items:stretch; justify-content:center;">
 			<Login
 				{username}
 				{connected}
@@ -85,9 +116,7 @@
 			/>
 		</section>
 	{:else}
-		<section
-			style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:#222; color:#f5f5f5; display:flex; flex-direction:row; align-items:stretch;"
-		>
+		<section class="chat-section" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:#222; color:#f5f5f5; display:flex; flex-direction:row; align-items:stretch;">
 			<div
 				style="flex:4; display:flex; flex-direction:column; height:100vh;"
 			>
@@ -105,8 +134,19 @@
 				>
 					<ChatInput {ws} {username} />
 				</div>
+				<!-- Mobile-only users row below the input -->
+				<div class="mobile-users-row">
+					<div class="user-row-inner">
+						<strong>Online:</strong>
+						<div class="chip-scroller">
+							{#each onlineUsers as user}
+								<span class="chip" class:me={user === username}>{user}</span>
+							{/each}
+						</div>
+					</div>
+				</div>
 			</div>
-			<div
+			<div class="online-panel"
 				style="flex:1; background:#181818; border-radius:8px; border:1px solid #333; padding:1em; color:#f5f5f5; min-width:100px; height:100vh; overflow-y:auto; display:flex; flex-direction:column;"
 			>
 				<OnlineList users={onlineUsers} currentUser={username} />
