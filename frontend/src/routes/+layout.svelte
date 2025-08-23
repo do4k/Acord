@@ -6,6 +6,7 @@
 </script>
 
 <svelte:head>
+	<title>Acord Chat</title>
 	<link rel="icon" href={favicon} />
 </svelte:head>
 

@@ -2,7 +2,8 @@
 
 This repository contains a full-stack application with a SvelteKit frontend and ASP.NET Core backend, containerized using Docker and orchestrated with Docker Compose.
 
-![screenshot](./docs/img/Screenshot.png)
+![mobile view](./docs/img/mobile_view.png)
+![desktop view](./docs/img/desktop_view.png)
 
 ## Project Structure
 
